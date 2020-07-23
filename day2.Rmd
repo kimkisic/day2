@@ -1,0 +1,57 @@
+---
+title: "빅데이터를 이용한 통계분석 2일차"
+author: "김기식"
+date: '7/17/2020'
+output: 
+  html_document: 
+    toc: yes
+    toc_float:
+      toc_collapsed: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+![데이터분석](https://itspresso.com/wp-content/uploads/2019/05/outsourcing-data-analysis.png)
+
+## 2일차 학습내용
+
+### 파생변수 만들기
+
+R에서 파생변수는 데이터프레임에 있는다른 변수들을 가지고 새로운 변수를 데이터 프레임안에 생성하는 방법이다.
+
+### 생성절차
+이 절차를 위해 cars데이터를 열고
+```{r 파생변수1, include=FALSE}
+#파생변수생성
+cars <- cars
+```
+
+cars데이터의 컬럼이름을 추출한다.
+cars 데이터는 총 `r ncol(cars)`개의 변수와 `r nrow(cars)`개의 관측치로 이루어진 데이터 프레임 자료이다.
+
+변수들의 이름은 다음과 같다.
+```{r 파생변수2, echo=FALSE, message=FALSE, warning=FALSE}
+
+## 변수이름 확인
+colnames(cars)
+```
+
+```{r 파생변수3, echo=FALSE}
+colnames(cars) <- c("속도","거리")
+head(cars)
+```
+
+새로 생성되는 파생변수의 이름은 '속도x거리'이며 이 값은 속도와 거리의 곱이다.
+```{r 파생변수4}
+# 파생변수 생성
+cars$속도x거리 <- cars$속도 * cars$거리
+head(cars)
+```
+
+그 결과로서 cars 데이터는 총 `r ncol(cars)`개의 변수와 `r nrow(cars)`개의 관측치로 이루어진 데이터 프레임으로 업데이트 되었다.
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/eVt6sFMLmMI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

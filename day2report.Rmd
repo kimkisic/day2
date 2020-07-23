@@ -1,0 +1,231 @@
+---
+title: "빅데이터를 이용한 통계분석 2일차 문서화 과제"
+author: "김기식"
+date: '17/7/2020'
+output: 
+  html_document: 
+    toc: yes
+    toc_float:
+      toc_collapsed: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+![데이터분석](https://itspresso.com/wp-content/uploads/2019/05/outsourcing-data-analysis.png)
+
+## 2일차 학습내용
+
+# 파생변수생성
+### R에서 파생변수는 데이터프레임에 있는다른 변수들을 가지고 새로운 변수를 데이터 프레임안에 생성하는 방법이다.
+```{r 파생변수1, include=FALSE}
+cars <- cars
+```
+cars데이터의 컬럼이름을 추출한다.
+cars 데이터는 총 `r ncol(cars)`개의 변수와 `r nrow(cars)`개의 관측치로 이루어진 데이터 프레임 자료이다.
+
+변수들의 이름은 다음과 같다.
+```{r 파생변수2, echo=FALSE, message=FALSE, warning=FALSE}
+## 변수이름 확인
+colnames(cars)
+```
+```{r 파생변수3, echo=FALSE}
+colnames(cars) <- c("속도","거리")
+head(cars)
+```
+
+그 결과로서 cars 데이터는 총 `r ncol(cars)`개의 변수와 `r nrow(cars)`개의 관측치로 이루어진 데이터 프레임으로 업데이트 되었다.
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/eVt6sFMLmMI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+# 파생변수 생성
+파생변수를 속도x거리 값으로 생성하여 값을 확인한다.
+```{r 파생변수4}
+cars$속도x거리 <- cars$속도 * cars$거리
+head(cars)
+```
+
+# 조건에 따라 변수의 값을 새로 생성
+ifelse구문을 사용하여 조건에 따른 값을 생성하여 확인한다.
+```{r 파생변수5}
+cars$속도정도 <- ifelse(cars$속도 > 7, "빠름", "느림")
+head(cars)
+```
+
+# hflights 패키지 설치
+hflights패키지를 설치 및 불러온뒤 hflights라는 변수에 hflights패키지 값을 넣은뒤 확인한다
+```{r 패키지 설치}
+#install.packages("hflights")
+require(hflights)
+hflights <- hflights
+summary(hflights)
+```
+
+# Select
+dplyr패키지를 설치 및 불러온뒤 newhflights라는 변수에 select함수를 이용하여 hflights의 값을 몇가지 선택하여 담는다
+```{r 샐랙트 함수}
+#install.packages("dplyr")
+require(dplyr)
+str(hflights)
+newhflights <- select(hflights, Origin, Distance, TailNum)
+```
+
+# Filter
+필터함수를 이용하여 hflights값의 조건에 맞는 값들을 추출하여 출력한다.
+```{r 필터함수}
+head(
+  filter(hflights, Month==2) 
+)
+hflight1 <- filter(hflights, Month==2)
+nrow(hflight1)
+
+head(
+  filter(hflights, Month==8)
+)
+hflight2 <- filter(hflights, Month==8)
+nrow(hflight2)
+
+hflight3 <- filter(hflights, Month==2 | Month==8)
+nrow(hflight3)
+
+hflight4 <- filter(hflights, Month==2 | Month=="DWF")
+nrow(hflight4)
+```
+
+# 정렬 Arrange
+어레인지 함수를 이용하여 달에 따른 오름차순 내림차순 등 값을 정렬시킨다
+```{r 정렬}
+hflight5 <- arrange(hflights, Month)
+head(hflight5)
+tail(hflight5)
+
+hflight6 <- arrange(hflights, desc(Month))
+head(hflight6)
+
+hflight7 <- arrange(hflights, desc(Month), DayOfWeek)
+head(hflight7)
+```
+
+# 열의 조작
+```{r}
+head(mutate(hflights, gain = ArrDelay - DepDelay), gain_per_hour = gain / (Airtime/60))
+```
+
+# Summary
+데이터에 대한 요약정보, 숫자인 경우 최소값, 최대값, 간술평균, 중앙값, 하한 사분위수, 상한 사분위수를 보여준다.
+```{r 요약정보}
+summarise(hflights, delay = mean(DepDelay, na.rm = TRUE))
+```
+
+# 그룹별 요약(다시) using %>%
+원하는 그룹을 선택하여 데이터를 추출하는 기법
+```{r 그룹별 데이터 추출}
+hflights %>%
+  group_by(TailNum) %>%
+  select(Month, DayofMonth, DayOfWeek) %>%
+  summarise(AveMonth = mean(Month, na.rm = TRUE), AveMonth = mean(Month, na.rm = TRUE), AveDayofMonth = mean(DayofMonth, na.rm = TRUE), AveDayofWeek = mean(DayOfWeek, na.rm = TRUE))
+```
+# 연습문제
+```{r 연습문제}
+head(
+  hflights %>%
+    filter(TailNum != "") %>%
+    select(FlightNum, TailNum, AirTime, Distance, Origin) %>%
+    group_by(TailNum) %>%
+    filter(Origin == "HOU" || Distance > 1000) %>%
+    summarise(AveAirTime = mean(AirTime, na.rm=TRUE), AveDistance = mean(Distance, na.rm=TRUE))
+)
+```
+# ggplot2
+## 패키지 설치
+#install.packages("ggplot2")
+ggplot2 사용해보기
+```{r GG플롯2}
+require(ggplot2)
+
+## 데이터 불러오기
+
+data("midwest", package="ggplot2")
+summary(midwest)
+
+options(scipen=999)
+ggplot(midwest, aes(x=area, y=poptotal))
+
+## Scatter Plot생성
+
+midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point()
+
+## 리그레션 라인 추가
+
+midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method="lm")
+
+## 그래프의 범위 조정
+
+g <- midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method="lm")
+g + xlim(c(0,0.1)) + ylim(c(0,1000000))
+
+## 줌
+
+g1 <- g + coord_cartesian(xlim=c(0, 0.75), ylim=c(0, 500000))
+g1
+
+g1 <- g + xlim(c(0,0.1)) + ylim(c(0,1000000))
+
+## 제목과 축 이름
+
+g1
+g1 + labs(title="Area VS Population", subtitle = "midwest", y="Population", x="area", caption="Midwest Population")
+
+## 색변경
+
+g <- midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point(col="red", size=1) + geom_smooth(method="lm")
+g + xlim(c(0,0.1)) + ylim(c(0,1000000))
+
+## 색에 데이터 정보 반영
+
+g <- midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point(aes(col=state), size=1) + geom_smooth(method="lm")
+g + xlim(c(0,0.1)) + ylim(c(0,1000000))
+
+## 그래프 분할
+
+g <- midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method="lm")
+g + facet_wrap(~state, nrow=2)
+
+midwest
+hist(midwest$popdensity)
+midwest$degreeofdensity <- ifelse(midwest$popdensity >= 10000, "high", "low")
+table(midwest$degreeofdensity)
+
+g <- midwest %>%
+  ggplot(aes(x=area, y=poptotal)) + geom_point(aes(col=degreeofdensity)) + geom_smooth(method="lm")
+g + facet_wrap(~state, nrow=2)
+```
+## ggplot 실습
+연습하기위해 실습해봅시다
+```{r 실습}
+mtcars <- mtcars
+summary(mtcars)
+plot(mtcars)
+
+### mtcars데이터를 활용해서 두개의 연속형 변수를 선택한 후 scatter plot을 그려보세요
+### 점에 카테고리컬 변수의 정보를 활용해서 점의 색깔에 반영해 보십시요.
+
+prac <- mtcars %>%
+  ggplot(aes(x=disp, y=hp)) + geom_point(aes(col=as.factor(wt))) + ggtitle('scatter plot practice') + xlab('Displacement') + ylab('Gross horsepower')
+prac
+
+mtcars$names <- rownames(mtcars)
+
+gg <- mtcars %>%
+  ggplot(aes(x=wt, y=mpg)) + geom_point(aes(col=as.factor(vs))) + geom_smooth(method = "lm") + geom_text(aes(label=names), size=3)
+gg
+```

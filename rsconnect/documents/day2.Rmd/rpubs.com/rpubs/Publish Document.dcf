@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/640095/69417b46354b41c2a3682332b9a47301
+bundleId: https://api.rpubs.com/api/v1/document/640095/69417b46354b41c2a3682332b9a47301
+url: http://rpubs.com/kimkisic/640095
+when: 1594971725.20874
